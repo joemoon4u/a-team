@@ -1,0 +1,57 @@
+{
+  "_about": "Crew guardrail config. Edit by hand (crew agents are blocked from editing .claude/). Patterns are globs relative to the repo root.",
+
+  "protected_branches": ["main", "master", "release", "production"],
+
+  "source_paths": ["src/**", "app/**", "lib/**", "packages/**"],
+
+  "secret_patterns": [".env", ".env.*", "**/.env", "**/.env.*", "secrets/**", "**/secrets/**",
+                      "**/*.pem", "**/*.key", "**/*.p12", "**/*.pfx", "**/id_rsa*", "**/id_ed25519*",
+                      "**/credentials*.json", "**/*.tfstate", "**/.npmrc", "**/.pypirc", "**/kubeconfig*"],
+  "secret_allowlist": ["**/.env.example", ".env.example", "**/.env.sample", ".env.sample", "**/.env.template", ".env.template"],
+
+  "guarded_paths": [".claude/**", ".github/workflows/**", ".github/CODEOWNERS", "CODEOWNERS",
+                    ".gitlab-ci.yml", "AGENTS.md", "CLAUDE.md"],
+
+  "human_gate_files": ["docs/crew/*/approved.md", "docs/crew/*/risk-acceptance.md"],
+
+  "deploy_patterns": ["\\bdeploy\\b", "deploy-", "\\bkubectl\\b.*\\b(apply|rollout|set|scale|delete|patch|replace|create)\\b",
+                      "\\bhelm\\b.*\\b(install|upgrade|rollback|uninstall)\\b", "\\bterraform\\b.*\\b(apply|destroy)\\b",
+                      "\\bpulumi\\b.*\\bup\\b", "cdk\\s+deploy", "sam\\s+deploy",
+                      "serverless\\s+deploy", "\\bvercel\\b", "netlify\\s+deploy", "fly\\s+deploy",
+                      "gcloud\\s+.*deploy", "az\\s+.*deploy", "npm\\s+publish", "twine\\s+upload", "docker\\s+push"],
+  "production_patterns": ["\\bprod\\b", "\\bproduction\\b", "--prod\\b", "\\bprd\\b"],
+
+  "staging_deploy_command": "make deploy-staging",
+
+  "roles": {
+    "chief-of-staff": {
+      "write": ["docs/crew/*/board.md"],
+      "bash": "read-only"
+    },
+    "chief-engineer": {
+      "write": ["docs/crew/*/design.md", "docs/adr/**"],
+      "bash": "none"
+    },
+    "responsible-engineer": {
+      "write": ["src/**", "app/**", "lib/**", "packages/**", "tests/unit/**", "docs/crew/*/build-*.md",
+                "package.json", "package-lock.json", "pnpm-lock.yaml", "yarn.lock",
+                "pyproject.toml", "poetry.lock", "uv.lock", "requirements*.txt",
+                "go.mod", "go.sum", "pom.xml", "build.gradle*", ".env.example"],
+      "bash": "build"
+    },
+    "test-engineer": {
+      "write": ["tests/acceptance/**", "docs/crew/*/test-report.md"],
+      "read_deny": ["src/**", "app/**", "lib/**", "packages/**", "tests/unit/**", "docs/crew/*/build-*.md"],
+      "bash": "test"
+    },
+    "security-engineer": {
+      "write": ["docs/crew/*/threat-model.md", "docs/crew/*/security-report.md"],
+      "bash": "scan"
+    },
+    "launch-director": {
+      "write": ["docs/crew/*/release-pack.md"],
+      "bash": "release"
+    }
+  }
+}

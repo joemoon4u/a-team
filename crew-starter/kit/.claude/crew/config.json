@@ -1,0 +1,198 @@
+{
+  "_about": "Crew guardrail config for a full-stack TypeScript repo: React web app + Node.js API on PostgreSQL (npm workspaces). Edit by hand; crew agents are blocked from editing .claude/. Globs are relative to the repo root. A glob with no '/' matches that file name in any folder.",
+  "_layout": [
+    "docs/product/            PRD.md and backlog.md. Human-owned: every agent reads them, no crew agent edits them",
+    "apps/web/                 React + Vite + TypeScript",
+    "apps/web/src/             components/, pages/, hooks/, api/ ; unit tests next to the code as *.test.tsx",
+    "apps/web/public/          static assets",
+    "apps/api/                 Node.js + TypeScript (Express or Fastify)",
+    "apps/api/src/             routes/, services/, db/ ; unit tests next to the code as *.test.ts",
+    "apps/api/tests/           integration tests against a throwaway Postgres",
+    "apps/api/db/migrations/   SQL migrations (node-pg-migrate or Knex). Prisma uses apps/api/prisma/, Drizzle apps/api/drizzle/",
+    "apps/api/db/seeds/        local seed data only, never production data",
+    "packages/                 shared code, e.g. packages/contracts/ for the API request/response types",
+    "tests/acceptance/<REQ>/   Test Engineer: Playwright for the web, HTTP tests for the API",
+    "docker-compose.yml        local Postgres for development and tests",
+    "Makefile + scripts/deploy/  human-owned deploy path; 'make deploy-staging' calls scripts/deploy/staging.sh"
+  ],
+  "protected_branches": [
+    "main",
+    "master",
+    "release",
+    "production"
+  ],
+  "source_paths": [
+    "apps/web/src/**",
+    "apps/api/src/**",
+    "apps/api/db/**",
+    "packages/**"
+  ],
+  "secret_patterns": [
+    ".env",
+    ".env.*",
+    "**/.env",
+    "**/.env.*",
+    "secrets/**",
+    "**/secrets/**",
+    "**/*.pem",
+    "**/*.key",
+    "**/*.p8",
+    "**/*.p12",
+    "**/*.pfx",
+    "**/id_rsa*",
+    "**/id_ed25519*",
+    "**/credentials*.json",
+    "**/service-account*.json",
+    "**/*.tfstate",
+    "**/kubeconfig*",
+    "**/.npmrc",
+    "**/.yarnrc.yml",
+    ".pgpass",
+    "**/.pgpass",
+    "**/pg_service.conf",
+    "**/*.dump",
+    "**/*.backup",
+    "**/*.sql.gz",
+    "**/backups/**"
+  ],
+  "secret_allowlist": [
+    ".env.example",
+    ".env.sample",
+    ".env.template"
+  ],
+  "guarded_paths": [
+    ".claude/**",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "CODEOWNERS",
+    ".github/**",
+    ".githooks/**",
+    ".husky/**",
+    ".gitlab-ci.yml",
+    "Makefile",
+    "scripts/deploy/**",
+    "infra/**",
+    "**/tsconfig*.json",
+    "**/eslint.config.*",
+    "**/.eslintrc*",
+    "**/vitest.config.*",
+    "**/jest.config.*",
+    "**/playwright.config.*",
+    ".gitleaks.toml",
+    ".gitleaksignore",
+    ".semgrepignore",
+    ".trivyignore",
+    ".snyk",
+    ".nsprc",
+    "audit-ci.json*",
+    "docs/product/**",
+    ".gitignore",
+    ".gitattributes",
+    ".dockerignore",
+    ".nvmrc",
+    "docker/**"
+  ],
+  "human_gate_files": [
+    "docs/crew/*/approved.md",
+    "docs/crew/*/risk-acceptance.md"
+  ],
+  "deploy_patterns": [
+    "\\bdeploy\\b",
+    "deploy-",
+    "\\bkubectl\\b.*\\b(apply|rollout|set|scale|delete|patch|replace|create)\\b",
+    "\\bhelm\\b.*\\b(install|upgrade|rollback|uninstall)\\b",
+    "\\bterraform\\b.*\\b(apply|destroy)\\b",
+    "\\bpulumi\\b.*\\bup\\b",
+    "cdk\\s+deploy",
+    "sam\\s+deploy",
+    "serverless\\s+deploy",
+    "\\bvercel\\b",
+    "netlify\\s+deploy",
+    "fly\\s+deploy",
+    "gcloud\\s+.*deploy",
+    "az\\s+.*deploy",
+    "npm\\s+publish",
+    "docker\\s+push",
+    "(?i)\\bmigrat(e|ion)(:|\\s+)(up|latest|deploy|run)\\b",
+    "\\bdrizzle-kit\\s+migrate\\b",
+    "(?i)\\bmigrate\\s+reset\\b",
+    "(?i)\\bmigrate:(rollback|reset|fresh|down)\\b",
+    "(?i)\\bdb:(reset|drop|wipe)\\b",
+    "--accept-data-loss",
+    "--force-reset",
+    "\\bprisma\\s+db\\s+push\\b",
+    "\\bdrizzle-kit\\s+(push|drop)\\b",
+    "(?i)\\bdropdb\\b",
+    "(?i)\\bdrop\\s+(database|schema|table|owned)\\b",
+    "(?i)\\btruncate\\s+table\\b",
+    "(?i)\\bpsql\\b.*\\b(drop|truncate|delete|update|insert|alter|grant)\\b",
+    "\\bpg_dump(all)?\\b",
+    "\\bpg_restore\\b"
+  ],
+  "production_patterns": [
+    "\\bprod\\b",
+    "\\bproduction\\b",
+    "--prod\\b",
+    "\\bprd\\b",
+    "\\bprod(uction)?_"
+  ],
+  "staging_deploy_command": "make deploy-staging",
+  "roles": {
+    "chief-of-staff": {
+      "write": [
+        "docs/crew/*/board.md"
+      ],
+      "bash": "read-only"
+    },
+    "chief-engineer": {
+      "write": [
+        "docs/crew/*/design.md",
+        "docs/adr/**"
+      ],
+      "bash": "none"
+    },
+    "responsible-engineer": {
+      "write": [
+        "apps/web/**",
+        "apps/api/**",
+        "packages/**",
+        "package.json",
+        "package-lock.json",
+        "docker-compose.yml",
+        "compose.yaml",
+        ".env.example",
+        "docs/crew/*/build-*.md"
+      ],
+      "bash": "build"
+    },
+    "test-engineer": {
+      "write": [
+        "tests/acceptance/**",
+        "docs/crew/*/test-report.md"
+      ],
+      "read_deny": [
+        "apps/web/src/**",
+        "apps/api/src/**",
+        "apps/*/tests/**",
+        "apps/api/db/**",
+        "apps/api/prisma/**",
+        "apps/api/drizzle/**",
+        "docs/crew/*/build-*.md"
+      ],
+      "bash": "test"
+    },
+    "security-engineer": {
+      "write": [
+        "docs/crew/*/threat-model.md",
+        "docs/crew/*/security-report.md"
+      ],
+      "bash": "scan"
+    },
+    "launch-director": {
+      "write": [
+        "docs/crew/*/release-pack.md"
+      ],
+      "bash": "release"
+    }
+  }
+}
