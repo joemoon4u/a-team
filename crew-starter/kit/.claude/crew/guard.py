@@ -536,6 +536,9 @@ def main():
         if role not in CREW and role != "baseline":
             raise Block("unknown crew role '%s'" % role, "Fix the hook command in the agent file.")
         event = json.load(sys.stdin)
+        caller = event.get("agent_type")
+        if caller in CREW and caller != role and role != "baseline":
+            sys.exit(0)   # the acting subagent's own hook decides
         tool = event.get("tool_name", "")
         ti = event.get("tool_input") or {}
         cwd = event.get("cwd") or os.getcwd()
